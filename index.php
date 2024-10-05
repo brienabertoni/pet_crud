@@ -7,8 +7,8 @@ $usuarioLogado = isset($_SESSION['nome_usuario']) ? $_SESSION['nome_usuario'] : 
 
 $host = "127.0.0.1";
 $usuario = "root";
-$senha= "";
-$db="p1_dev_web";
+$senha = "";
+$db = "p1_dev_web";
 
 $conn = new mysqli($host, $usuario, $senha, $db);
 
@@ -22,8 +22,7 @@ $result = $conn->query($sql);
 
 // Verificar se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Aqui você pode processar o cadastro do produto
-    // Exemplo de processamento do cadastro (com validação)
+    // Processar o cadastro do produto
     $nome_produto = $_POST['nome_produto'];
     $descricao = $_POST['descricao'];
     $preco = $_POST['preco'];
@@ -109,8 +108,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($usuarioLogado) {
                                 echo "<td>" . $row["estoque"] . "</td>";
                                 echo "<td>" . $row["data_adicao"] . "</td>";
-                                echo "<td><a href='?id=" . $row["id"] . "'>Editar</a></td>";
-                                echo "<td><a href='?id=" . $row["id"] . "'>Deletar</a></td>";
+                                // Adicionando o botão de edição com link para a página edit_produto.php
+                                echo "<td><a href='edit_produto.php?id=" . $row["id"] . "'>Editar</a></td>";
+                                
+                                // Formulário com confirmação de deleção
+                                echo "<td>
+                                    <form method='POST' action='deletar_produto.php' onsubmit=\"return confirm('Tem certeza que deseja deletar este produto?');\">
+                                        <input type='hidden' name='id' value='" . $row["id"] . "'>
+                                        <input type='submit' value='Deletar'>
+                                    </form>
+                                </td>";
                             }
                             echo "</tr>";
                         }
