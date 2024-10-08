@@ -16,13 +16,13 @@ if ($conn->connect_error) {
     die("Falha na conexão: " . $conn->connect_error);
 }
 
-// Consultar produtos
+
 $sql = "SELECT id, nome_produto, descricao, preco, estoque, data_adicao FROM produtos";
 $result = $conn->query($sql);
 
-// Verificar se o formulário foi enviado
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Processar o cadastro do produto
+    
     $nome_produto = $_POST['nome_produto'];
     $descricao = $_POST['descricao'];
     $preco = $_POST['preco'];
@@ -43,54 +43,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo isset($_GET['action']) && $_GET['action'] == 'cadastrar' ? 'Cadastrar Produto' : 'Produtos'; ?></title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <div>
-            <?php if ($usuarioLogado): ?>
-                <p>Bem-vindo, <?php echo htmlspecialchars($usuarioLogado); ?>!</p>
-                <a href="logout.php">Logout</a>
-            <?php else: ?>
-                <a href="cadastro_form.php">Cadastro</a>
-                <a href="login.php">Login</a>
-            <?php endif; ?>
-        </div>
 
+<div class="container">
+<header class="header">
+    <?php if ($usuarioLogado): ?>
+        <p class="textboas">Bem-vindo, <?php echo htmlspecialchars($usuarioLogado); ?>!</p> <!-- Texto "Bem-vindo" aqui -->
+    <?php endif; ?>
+
+    <div class="logo">
+        <a href="index.php">
+            <img src="./midia/Brivajhylogo.png" alt="Logo do Site" class="logo-img" width="200" height="auto">
+        </a>
+    </div>
+    
+    <?php if ($usuarioLogado): ?>
+        <a class="btn" href="logout.php">Logout</a>
+    <?php else: ?>
+        <a class="btn" href="cadastro_form.php">Cadastro</a>
+        <a class="btn" href="login.php">Login</a>
+    <?php endif; ?>
+</header>
+
+                
         <?php if (isset($_GET['action']) && $_GET['action'] == 'cadastrar'): ?>
-            <h1>Cadastrar Produto</h1>
-            <form method="POST" action="">
-                <label for="nome_produto">Nome do Produto:</label>
-                <input type="text" id="nome_produto" name="nome_produto" required><br><br>
+            <div class="cadastro">
+                <h1>Cadastrar Produto</h1>
+                <form method="POST" action="" class="form">
+                    <label for="nome_produto">Nome do Produto:</label>
+                    <input type="text" id="nome_produto" name="nome_produto" required>
 
-                <label for="descricao">Descrição:</label>
-                <input id="descricao" name="descricao"><br><br>
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" rows="5"></textarea>
 
-                <label for="preco">Preço:</label>
-                <input type="number" id="preco" name="preco" step="0.01" required><br><br>
+                    <label for="preco">Preço:</label>
+                    <input type="number" id="preco" name="preco" step="0.01" required>
 
-                <label for="estoque">Quantidade em Estoque:</label>
-                <input type="number" id="estoque" name="estoque" required><br><br>
+                    <label for="estoque">Quantidade em Estoque:</label>
+                    <input type="number" id="estoque" name="estoque" required>
 
-                <input type="submit" value="Cadastrar Produto">
-            </form>
-            <br>
-            <a href="?"><input type="button" value="Ver produtos cadastrados"></a>
+                    <input class="btn-submit" type="submit" value="Cadastrar Produto">
+                </form>
+                <a class="btn" href="?">Ver produtos cadastrados</a>
+            </div>
         <?php else: ?>
             <h1>Produtos</h1>
             <table class="table">
                 <thead>
                     <tr>
                         <?php if ($usuarioLogado): ?>
-                            <th scope="col">ID</th>
+                            <th>ID</th>
                         <?php endif; ?>
-                        <th scope="col">Nome</th>
-                        <th scope="col">Descrição</th>
-                        <th scope="col">Preço</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Preço</th>
                         <?php if ($usuarioLogado): ?>
-                            <th scope="col">Quantidade em Estoque</th>
-                            <th scope="col">Data de Cadastro</th>
-                            <th scope="col">Editar</th>
-                            <th scope="col">Deletar</th>
+                            <th>Quantidade em Estoque</th> 
+                            <th>Data de Cadastro</th>
+                            <th>Editar</th>
+                            <th>Deletar</th>
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -108,16 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($usuarioLogado) {
                                 echo "<td>" . $row["estoque"] . "</td>";
                                 echo "<td>" . $row["data_adicao"] . "</td>";
-                                // Adicionando o botão de edição com link para a página edit_produto.php
-                                echo "<td><a href='edit_produto.php?id=" . $row["id"] . "'>Editar</a></td>";
+
                                 
-                                // Formulário com confirmação de deleção
-                                echo "<td>
-                                    <form method='POST' action='deletar_produto.php' onsubmit=\"return confirm('Tem certeza que deseja deletar este produto?');\">
-                                        <input type='hidden' name='id' value='" . $row["id"] . "'>
-                                        <input type='submit' value='Deletar'>
-                                    </form>
-                                </td>";
+                                echo "<td><a class='btn-table' href='edit_produto.php?id=" . $row["id"] . "'>Editar</a></td>"; // Botão Editar
+                                
+                                
+                                echo "<td><a class='btn-table' href='deletar_produto.php?id=" . $row["id"] . "'>Deletar</a></td>"; // Botão Deletar
                             }
                             echo "</tr>";
                         }
@@ -129,10 +141,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </table>
             <?php if ($usuarioLogado): ?>
                 <div>
-                    <a href="?action=cadastrar"><input type="button" value="Cadastrar novo produto"></a>
+                    <a class="btn" href="?action=cadastrar">Cadastrar novo produto</a>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
     </div>
+    </div> 
+
 </body>
 </html>
+
